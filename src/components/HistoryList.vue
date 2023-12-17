@@ -14,7 +14,7 @@
                 <el-table-column type="index" label="序号" width="auto" min-width="25%" align="center" />
                 <el-table-column prop="prize" label="奖项" width="auto" min-width="25%" align="center" />
                 <el-table-column prop="name" label="姓名" width="auto" min-width="25%" align="center" />
-                <el-table-column prop="department" label="部门" width="auto" min-width="25%" align="center" />
+                <el-table-column prop="corporation" label="公司名" width="auto" min-width="25%" align="center" />
             </el-table>
         </el-drawer>
     </div>

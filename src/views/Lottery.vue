@@ -1,31 +1,35 @@
 <template>
-  <div class="ld-div">
-    <div v-if="isMobile" style="height: 100%;width: 100%;background-color: #000;"></div>
+  <div class="ld-div" v-if="!isMobile">
+    <div
+      v-if="isMobile"
+      style="height: 100%; width: 100%; background-color: #000"
+    ></div>
     <LuckDraw v-else />
   </div>
 </template>
 
-<script >
-import LuckDraw from '../components/LuckDraw.vue';
-import judgeDevice from '@/tools/judgeDevice';
+<script>
+import LuckDraw from "../components/LuckDraw.vue";
+import judgeDevice from "@/tools/judgeDevice";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    LuckDraw
+    LuckDraw,
   },
   data() {
     return {
       isMobile: false,
-    }
+    };
   },
   mounted() {
     this.isMobile = judgeDevice();
     if (this.isMobile) {
-      alert("当前项目暂未适配移动端，请在pc端打开！")
+      alert("当前项目暂未适配移动端，请在pc端打开！");
+      this.$router.push("/lottery/sign_in");
     }
   },
-}
+};
 </script>
 
 <style lang="scss">

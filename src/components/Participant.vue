@@ -1,64 +1,98 @@
 <!--参与者表格-->
 <template>
-    <div class='participant-container' v-loading.fullscreen="isLoading">
-        <el-drawer size="100%" v-model="isParticipant" title="参与人员" direction="btt" :before-close="handleClose"
-            :with-header="false">
-            <h1 class="tit">参与人员</h1>
-            <el-icon class="close-btn" @click="handleClose" size="40px" color="#f00">
-                <Close />
-            </el-icon>
-            <!-- <el-button class="imp-bt" color="#b79900" @click="downTemp">
+  <div class="participant-container" v-loading.fullscreen="isLoading">
+    <el-drawer
+      size="100%"
+      v-model="isParticipant"
+      title="参与人员"
+      direction="btt"
+      :before-close="handleClose"
+      :with-header="false"
+    >
+      <h1 class="tit">参与人员</h1>
+      <el-icon class="close-btn" @click="handleClose" size="40px" color="#f00">
+        <Close />
+      </el-icon>
+      <!-- <el-button class="imp-bt" color="#b79900" @click="downTemp">
                 下载模板
             </el-button> -->
-            <el-button class="imp-bt" color="#b79900" @click="importData">
-                获取数据
-                <!-- <input class="inp-xlsx" type="file" accept=".xls,.xlsx" @change="importData" /> -->
-            </el-button>
-            <el-button class="imp-bt" color="#b79900" @click="deleteTab">
-                删除数据
-            </el-button>
-            <el-table :data="tabDataS" style="width: 90vw;margin: 20px 2vw 0px 2vw;" height="80vh">
-                <el-table-column type="index" label="序号" width="auto" min-width="25%" align="center" />
-                <el-table-column prop="name" label="姓名" width="auto" min-width="25%" align="center" />
-                <el-table-column prop="age" label="性别" width="auto" min-width="25%" align="center" />
-                <el-table-column prop="department" label="部门" width="auto" min-width="25%" align="center" />
-            </el-table>
-        </el-drawer>
-    </div>
+      <el-button class="imp-bt" color="#b79900" @click="importData">
+        获取数据
+        <!-- <input class="inp-xlsx" type="file" accept=".xls,.xlsx" @change="importData" /> -->
+      </el-button>
+      <el-button class="imp-bt" color="#b79900" @click="deleteTab">
+        删除数据
+      </el-button>
+      <el-table
+        :data="tabDataS"
+        style="width: 90vw; margin: 20px 2vw 0px 2vw"
+        height="80vh"
+      >
+        <el-table-column
+          type="index"
+          label="序号"
+          width="auto"
+          min-width="25%"
+          align="center"
+        />
+        <el-table-column
+          prop="name"
+          label="姓名"
+          width="auto"
+          min-width="25%"
+          align="center"
+        />
+        <el-table-column
+          prop="corporation"
+          label="公司名"
+          width="auto"
+          min-width="25%"
+          align="center"
+        />
+        <el-table-column
+          prop="phone"
+          label="手机号"
+          width="auto"
+          min-width="25%"
+          align="center"
+        />
+      </el-table>
+    </el-drawer>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
-import { fetchData } from "../tools/fetchData.js";
+import { ref, computed, watch, onMounted } from "vue";
+import { fetchData } from "@/tools/fetchData";
 
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox } from "element-plus";
 import * as XLSX from "xlsx";
-import { saveAs } from 'file-saver';
+import { saveAs } from "file-saver";
 let props = defineProps({
-    isParticipant: Boolean,//抽屉状态
-}),
-    isParticipant = ref(false),
-    tabData = ref([]),
-    tabDataS = ref([]),//表格数据
-    isLoading = ref(false),
-    emits = defineEmits(["close", "getNameList"]);
+    isParticipant: Boolean, //抽屉状态
+  }),
+  isParticipant = ref(false),
+  tabData = ref([]),
+  tabDataS = ref([]), //表格数据
+  isLoading = ref(false),
+  emits = defineEmits(["close", "getNameList"]);
 
-onMounted(() => { });
+onMounted(() => {});
 
 //监听对话框状态
 watch(
-    () => props.isParticipant,
-    (val) => {
-        isParticipant.value = val;
-        if (val) {
-            tabDataS.value = JSON.parse(localStorage.getItem("tabData"));
-        }
+  () => props.isParticipant,
+  (val) => {
+    isParticipant.value = val;
+    if (val) {
+      tabDataS.value = JSON.parse(localStorage.getItem("tabData"));
     }
-)
+  }
+);
 
 //关闭对话框
 function handleClose() {
-    emits("close");
+  emits("close");
 }
 
 //下载模板
@@ -69,11 +103,11 @@ function handleClose() {
 // }
 
 //导入数据
-function importData(){
-    const url =
-    "/lottery/gettabledata";
-  fetchData(url, "GET")
-    .then((data) => {
+function importData() {
+  const url = "lottery/sign_in_data";
+  fetchData(url)
+    .then((res) => {
+      const { data } = res;
       console.log(data);
       localStorage.setItem("tabData", JSON.stringify(data));
     })
@@ -111,73 +145,69 @@ function importData(){
 
 //删除表格
 function deleteTab() {
-    ElMessageBox.confirm(
-        '确认删除数据?',
-        {
-            confirmButtonText: '确认',
-            cancelButtonText: '取消',
-            type: 'warning',
-        }
-    )
-        .then(() => {
-            let a = [];
-            localStorage.setItem("tabData", JSON.stringify(a));//数据存入本地
-            tabDataS.value = [];
-            emits("getNameList", tabDataS);
-            ElMessage({
-                type: 'success',
-                message: '删除成功',
-            })
-        })
-        .catch(() => {
-            ElMessage({
-                type: 'info',
-                message: '取消删除',
-            })
-        })
+  ElMessageBox.confirm("确认删除数据?", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(() => {
+      let a = [];
+      localStorage.setItem("tabData", JSON.stringify(a)); //数据存入本地
+      tabDataS.value = [];
+      emits("getNameList", tabDataS);
+      ElMessage({
+        type: "success",
+        message: "删除成功",
+      });
+    })
+    .catch(() => {
+      ElMessage({
+        type: "info",
+        message: "取消删除",
+      });
+    });
 }
-
 </script>
 
 <style lang="scss" scoped>
 .participant-container {
-    height: 100%;
-    width: 100%;
-    text-align: center;
+  height: 100%;
+  width: 100%;
+  text-align: center;
 
-    .tit {
-        position: absolute;
-        left: 0;
-        top: 0;
-        margin: 10px;
+  .tit {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 10px;
+  }
+
+  .close-btn {
+    cursor: pointer;
+    position: absolute;
+    margin: 10px;
+    right: 0;
+    top: 0;
+  }
+
+  .imp-bt {
+    color: #fff;
+    margin: 10px 40px;
+    padding: 20px;
+    font-weight: 900;
+    font-size: 20px;
+    position: relative;
+
+    input {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      border: 0px;
     }
-
-    .close-btn {
-        cursor: pointer;
-        position: absolute;
-        margin: 10px;
-        right: 0;
-        top: 0;
-    }
-
-    .imp-bt {
-        color: #fff;
-        margin: 10px 40px;
-        padding: 20px;
-        font-weight: 900;
-        font-size: 20px;
-        position: relative;
-
-        input {
-            position: absolute;
-            left: 0;
-            top: 0;
-            z-index: 10;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            border: 0px;
-        }
-    }
+  }
 }
 </style>

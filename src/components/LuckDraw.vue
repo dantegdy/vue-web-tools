@@ -65,7 +65,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, toRaw } from "vue";
-import { fetchData } from "../tools/fetchData.js";
+import { fetchData } from "@/tools/fetchData";
 import Participant from "./Participant.vue";
 import HistoryList from "./HistoryList.vue";
 let curName = ref("请开始"),
@@ -79,10 +79,10 @@ let curName = ref("请开始"),
   nameList = ref([]); //名字列表
 
 function dataInit() {
-  const url =
-    "/lottery/gettabledata";
-  fetchData(url, "GET")
-    .then((data) => {
+  const url = "lottery/sign_in_data";
+  fetchData(url)
+    .then((res) => {
+      const { data } = res;
       console.log(data);
       localStorage.setItem("tabData", JSON.stringify(data));
     })
@@ -171,7 +171,7 @@ function handleStop() {
       luckDrawHis.push({
         prize: curOpt.value, //奖项
         name: curName.value, //姓名
-        department: t.department, //部门
+        corporation: t.corporation, //公司名
       });
     }
   });
